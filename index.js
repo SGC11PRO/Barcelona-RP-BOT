@@ -42,6 +42,22 @@ const embedCerrarServidor = new EmbedBuilder()
     .setDescription('Gracias por rolear con nosotros')
     .setColor('f10750')
 
+const helpEmbed = new EmbedBuilder()
+    .setTitle('Comandos Disponibles')
+    .setDescription('Aquí están los comandos que puedes usar:')
+    .addFields(
+        { name: '!help', value: 'Muestra esta ayuda.' },
+        { name: '!info', value: 'Proporciona información sobre el servidor.' },
+        { name: '!ping', value: 'Sorpresa...'},
+        { name: '!hola', value: 'Te da la bienvenida'},
+        { name: '!votacion-servidor', value: 'Abre votacion para abrir server'},
+        { name: '!abrir-servidor', value: 'Abre el servidor manualmente'},
+        { name: '!cerrar-servidor', value: 'Cierra el servidor manualmente'},
+        { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
+    )
+
+    .setColor('484e55')
+
 
 // ----------------------------- EVENTOS ------------------------------------------
 
@@ -141,11 +157,15 @@ client.on('messageCreate', async message => {
         estadoServidor = false
     }
 
+    // comando de estado del servidor
     if(command === 'estado-servidor') {
         estadoServidor 
             ? message.channel.send({ embeds: [embedAbrirServidor]})
             : message.channel.send({ embeds: [embedCerrarServidor]})
     }
+
+    // comando de ayuda
+    if(command === 'help') message.channel.send({ embeds: [helpEmbed]})
 });
 
 client.login(process.env.DISCORD_TOKEN);
