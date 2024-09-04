@@ -187,29 +187,36 @@ client.on('messageCreate', async message => {
 
         // obtener argumentos del comando
         const member = message.mentions.members.first()
-        const reason = args.slice(1).join(' ') || '⚠️ No has proporcionado un motivo. Revisa la estructura del comando con !help'   
+        const args = message.content.split(' ').slice(1)
+        const reason = args.slice(1).join(' ')
+
 
         // verifica si se menciono a algun usuario
         if(!member) return message.reply('⚠️ No has mencionado a ningún usuario. Revisa la estructura del comando con !help')
+
+        if(!reason) return message.reply('⚠️ No has proporcionado un motivo. Revisa la estructura del comando con !help')
 
 
         // crear embed
         const embedKick = new EmbedBuilder()
             .setTitle('Moderación Dubai RP')
             .setDescription(`El usuario ${member} ha sido expulsado del servidor 🚀`)
-            .setFooter(`Acción realizada por el moderador ${message.member}`)
-            .setColor(cf0911)
+            .setFooter({text: `Acción realizada por el moderador ${message.member}`})
+            .setColor('cf0911')
 
         // expulsar al usuario
-        try
+        if(member && reason)
         {
-            await member.kick(reason)
-            canalModeracion.send({ embeds: embedKick})
-        }
-        catch (error)
-        {
-            console.log(error)
-            message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
+            try
+            {
+                await member.kick(reason)
+                canalModeracion.send({ embeds: [embedKick]})
+            }
+            catch (error)
+            {
+                console.log(error)
+                message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
+            }
         }
     }
 });
