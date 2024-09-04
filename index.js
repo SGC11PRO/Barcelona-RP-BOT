@@ -296,6 +296,48 @@ client.on('messageCreate', async message => {
         }
     }
 
+    if (command === 'unmute') {
+
+        // comprueba si no tienes permisos
+        if (!message.member.permissions.has('MANAGE_MESSAGES')) {
+            return message.reply('¡No tienes permiso para usar este comando!');
+        }
+
+        // accede a los atributos del comando
+        const user = message.mentions.users.first();
+        const muteRole = message.guild.roles.cache.find(role => role.name === 'Muteado');
+        const muteTime = parseInt(args[1]) || 0;
+
+        // en caso de que falte algun atributo
+        if (!user) return message.reply('¡Debes mencionar a un usuario para mutear!');
+        if (!muteRole) return message.reply('¡No se encontró el rol de mutear!');
+
+        // accede al usuario a mutear
+        const member = message.guild.members.cache.get(user.id);
+
+        // comprueba si existe ese usuario
+        if (member) {
+            
+            // añade los roles
+            await member.roles.remove(muteRole);
+            message.channel.send(`¡${user.tag} ha sido muteado por ${muteTime} minutos!`); // menciona al usuario
+
+            // Desmutear después de un tiempo
+            setTimeout(() => {
+
+                // elimina los roles
+                member.roles.remove(muteRole);
+                message.channel.send(`¡${user.tag} ha sido desmuteado!`);
+
+            }, muteTime * 60000); // tiempo en minutos
+
+        }
+        else 
+        {
+            message.reply('¡No se pudo encontrar al usuario!');
+        }
+    }
+
 
 });
 
