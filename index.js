@@ -20,7 +20,9 @@ const reactionsTimeLimit = 1800000;
 const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
 
-let estadoServidor = false;
+let estadoServidor = false; // bool de estado del servidor
+
+const dniDatabase = new Map() // Almacenamiento de DNIs
 
 
 // ----------------------------- EMBEDS ------------------------------------------
@@ -54,6 +56,11 @@ const helpEmbed = new EmbedBuilder()
         { name: '!abrir-servidor', value: 'Abre el servidor manualmente'},
         { name: '!cerrar-servidor', value: 'Cierra el servidor manualmente'},
         { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
+        { name: '!ban [user]', value: 'Banea a un usuario'},
+        { name: '!kick [user]', value: 'Expulsa a un usuario del servidor'},
+        { name: '!mute [user]', value: 'Mutea a un usuario'},
+        { name: '!unmute [user]', value: 'Desmutea a un usuario'},
+        { name: '!ping', value: 'Sorpresa'},
     )
 
     .setColor('484e55')
@@ -166,6 +173,13 @@ client.on('messageCreate', async message => {
 
     // comando de ayuda
     if(command === 'help') message.channel.send({ embeds: [helpEmbed]})
+
+
+    // COMANDOS DE MODERACION
+    if(command === 'crear-dni') {
+        // code here
+    }
+
 });
 
 client.login(process.env.DISCORD_TOKEN);
