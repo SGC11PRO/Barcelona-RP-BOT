@@ -268,6 +268,7 @@ client.on('messageCreate', async message => {
 
         // en caso de que falte algun atributo
         if (!user) return message.reply('¡Debes mencionar a un usuario para mutear!');
+        if (!muteTime) return message.reply('Establece un tiempo para el muteo')
         if (!muteRole) return message.reply('¡No se encontró el rol de mutear!');
 
         // accede al usuario a mutear
