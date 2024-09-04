@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, channelLink } = require('discord.js');
 require('dotenv').config(); // Cargar variables de entorno
 
 const client = new Client({
@@ -276,19 +276,9 @@ client.on('messageCreate', async message => {
         // comprueba si existe ese usuario
         if (member) {
             
-            // añade los roles
+            // quita los roles
             await member.roles.add(muteRole);
-            message.channel.send(`¡${user.tag} ha sido muteado por ${muteTime} minutos!`); // menciona al usuario
-
-            // Desmutear después de un tiempo
-            setTimeout(() => {
-
-                // elimina los roles
-                member.roles.remove(muteRole);
-                message.channel.send(`¡${user.tag} ha sido desmuteado!`);
-
-            }, muteTime * 60000); // tiempo en minutos
-
+            message.channel.send(`El usuario ${member} ha sido desmuteado`)
         }
         else 
         {
