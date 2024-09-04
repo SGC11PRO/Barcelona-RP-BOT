@@ -30,9 +30,14 @@ const embedVotacion = new EmbedBuilder()
     .setColor('ffc000');
 
 const embedAbrirServidor = new EmbedBuilder()
-    .setTitle('Servidor Abierto!')
+    .setTitle('🟢🟢🟢 Servidor Abierto 🟢🟢🟢')
     .setDescription('Vamos todo el mundo a rolear!')
     .setColor('47eb00');
+
+const embedCerrarServidor = new EmbedBuilder()
+    .setTitle('🔴🔴🔴 Servidor Cerrado 🔴🔴🔴')
+    .setDescription('Gracias por rolear con nosotros')
+    .setColor('f10750')
 
 
 // ----------------------------- EVENTOS ------------------------------------------
@@ -42,6 +47,10 @@ client.on('messageCreate', async message => {
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
+
+    // obtener canales especificos
+    const canalVotacion = client.channels.cache.get(canalVotacionID);
+    const canalServidor = client.channels.cache.get(canalServidorID);
 
 
     // ----------------------------- COMANDOS ------------------------------------------
@@ -57,11 +66,9 @@ client.on('messageCreate', async message => {
     }
 
     // comando para iniciar votacion de abrir server
-    if (command === 'abrir-server') {
+    if (command === 'votacion-servidor') {
 
-        // obtener canales especificos
-        const canalVotacion = client.channels.cache.get(canalVotacionID);
-        const canalServidor = client.channels.cache.get(canalServidorID);
+
 
         // catch error
         if (!canalVotacion || !canalServidor) {
@@ -106,6 +113,16 @@ client.on('messageCreate', async message => {
         collector.on('end', () => {
             console.log('[/] Ha terminado la recoleccion de reacciones.');
         });
+    }
+
+    // abrir server manualmente
+    if(command === 'abrir-servidor') {
+        canalServidor.send({ embeds: [embedAbrirServidor]})
+    }
+
+    // cerrar servidor
+    if(command === 'cerrar-servidor') {
+        canalServidor.send({ embeds: [embedCerrarServidor]})
     }
 });
 
