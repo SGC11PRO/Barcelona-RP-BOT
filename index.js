@@ -19,6 +19,7 @@ const reactionsTimeLimit = 1800000;
 
 const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
+const canalModeracionID = '1280542954385309796'
 
 let estadoServidor = false; // bool de estado del servidor
 
@@ -56,13 +57,12 @@ const helpEmbed = new EmbedBuilder()
         { name: '!abrir-servidor', value: 'Abre el servidor manualmente'},
         { name: '!cerrar-servidor', value: 'Cierra el servidor manualmente'},
         { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
-        { name: '!ban [user]', value: 'Banea a un usuario'},
-        { name: '!kick [user]', value: 'Expulsa a un usuario del servidor'},
-        { name: '!mute [user]', value: 'Mutea a un usuario'},
+        { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
+        { name: '!kick [user] [motivo]', value: 'Expulsa a un usuario del servidor'},
+        { name: '!mute [user] [tiempo (en minutos)]', value: 'Mutea a un usuario'},
         { name: '!unmute [user]', value: 'Desmutea a un usuario'},
         { name: '!ping', value: 'Sorpresa'},
     )
-
     .setColor('484e55')
 
 
@@ -77,6 +77,8 @@ client.on('messageCreate', async message => {
     // obtener canales especificos
     const canalVotacion = client.channels.cache.get(canalVotacionID);
     const canalServidor = client.channels.cache.get(canalServidorID);
+
+    const canalModeracion = client.channels.cache.get(canalModeracionID)
 
 
     // ----------------------------- COMANDOS ------------------------------------------
@@ -176,9 +178,124 @@ client.on('messageCreate', async message => {
 
 
     // COMANDOS DE MODERACION
-    if(command === 'crear-dni') {
-        // code here
+    if(command === 'ban') {
+        
+        // comprueba los permisos del autor del comando
+        if (!message.member.permissions.has('BAN_MEMBERS')) {
+            return message.reply('¡No tienes permiso para usar este comando!');
+        }
+
+        // argumentos del comando
+        const user = message.mentions.users.first();
+        const reason = args.slice(1).join(' ') || 'No se proporcionó razón';
+
+        if (!user) return message.reply('¡Debes mencionar a un usuario para banear!'); // en el caso de que no se proporcione el usuario
+
+        // accede al usuario banedao
+        const member = message.guild.cache.get(user.id)
+
+        // banea al miembro (si es que esta en el server)
+        if(member) {
+            await member.ban({ reason })
+
+            // nuevo embed
+            const banEmbed = new EmbedBuilder()
+                .setTitle('Aviso de Moderación')
+                .setDescription(`El usuario ${member} ha sido baneado del servidor`)
+                .setFooter(`Usuario baneado por el moderador ${user}`)
+                .setColor(f10750)
+
+
+            // envia el embed
+            canalModeracion.send({ embeds: [banEmbed]})
+        }
+        else 
+        {
+            // si no se encuentra el miembro a banear
+            message.channel.send(`No se pudo encontrar el usuario ${member}`)
+        }
     }
+
+    if(command === 'ban') {
+        
+        // comprueba los permisos del autor del comando
+        if (!message.member.permissions.has('KICK_MEMBERS')) {
+            return message.reply('¡No tienes permiso para usar este comando!');
+        }
+
+        // argumentos del comando
+        const user = message.mentions.users.first();
+        const reason = args.slice(1).join(' ') || 'No se proporcionó razón';
+
+        if (!user) return message.reply('¡Debes mencionar a un usuario para banear!'); // en el caso de que no se proporcione el usuario
+
+        // accede al usuario a expulsar
+        const member = message.guild.cache.get(user.id)
+
+        // expulsa al miembro (si es que esta en el server)
+        if(member) {
+            await member.kick(reason )
+
+            // nuevo embed
+            const kickEmbed = new EmbedBuilder()
+                .setTitle('Aviso de Moderación')
+                .setDescription(`El usuario ${member} ha sido expulsado del servidor`)
+                .setFooter(`Usuario expulsado por el moderador ${user}`)
+                .setColor(f10750)
+
+
+            // envia el embed
+            canalModeracion.send({ embeds: [kickEmbed]})
+        }
+        else 
+        {
+            // si no se encuentra el miembro a banear
+            message.channel.send(`No se pudo encontrar el usuario ${member}`)
+        }
+    }
+
+    if (command === 'mute') {
+
+        // comprueba si no tienes permisos
+        if (!message.member.permissions.has('MANAGE_MESSAGES')) {
+            return message.reply('¡No tienes permiso para usar este comando!');
+        }
+
+        // accede a los atributos del comando
+        const user = message.mentions.users.first();
+        const muteRole = message.guild.roles.cache.find(role => role.name === 'Muteado');
+        const muteTime = parseInt(args[1]) || 0;
+
+        // en caso de que falte algun atributo
+        if (!user) return message.reply('¡Debes mencionar a un usuario para mutear!');
+        if (!muteRole) return message.reply('¡No se encontró el rol de mutear!');
+
+        // accede al usuario a mutear
+        const member = message.guild.members.cache.get(user.id);
+
+        // comprueba si existe ese usuario
+        if (member) {
+            
+            // añade los roles
+            await member.roles.add(muteRole);
+            message.channel.send(`¡${user.tag} ha sido muteado por ${muteTime} minutos!`); // menciona al usuario
+
+            // Desmutear después de un tiempo
+            setTimeout(() => {
+
+                // elimina los roles
+                member.roles.remove(muteRole);
+                message.channel.send(`¡${user.tag} ha sido desmuteado!`);
+
+            }, muteTime * 60000); // tiempo en minutos
+
+        }
+        else 
+        {
+            message.reply('¡No se pudo encontrar al usuario!');
+        }
+    }
+
 
 });
 
