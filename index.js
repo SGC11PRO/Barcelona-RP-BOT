@@ -276,9 +276,18 @@ client.on('messageCreate', async message => {
         // comprueba si existe ese usuario
         if (member) {
             
-            // quita los roles
+            // añade los roles
             await member.roles.add(muteRole);
-            message.channel.send(`El usuario ${member} ha sido desmuteado`)
+
+            // Desmutear después de un tiempo
+            setTimeout(() => {
+
+                // elimina los roles
+                member.roles.remove(muteRole);
+                message.channel.send(`¡${user.tag} ha sido desmuteado!`);
+
+            }, muteTime * 60000); // tiempo en minutos
+
         }
         else 
         {
@@ -310,16 +319,7 @@ client.on('messageCreate', async message => {
             
             // añade los roles
             await member.roles.remove(muteRole);
-            message.channel.send(`¡${user.tag} ha sido muteado por ${muteTime} minutos!`); // menciona al usuario
-
-            // Desmutear después de un tiempo
-            setTimeout(() => {
-
-                // elimina los roles
-                member.roles.remove(muteRole);
-                message.channel.send(`¡${user.tag} ha sido desmuteado!`);
-
-            }, muteTime * 60000); // tiempo en minutos
+            message.channel.send(`El usuario ${member} ha sido desmuteado`)
 
         }
         else 
