@@ -279,6 +279,17 @@ client.on('messageCreate', async message => {
             // añade los roles
             await member.roles.add(muteRole);
 
+            // nuevo embed
+            const muteEmbed = new EmbedBuilder()
+                .setTitle('Aviso de Moderación')
+                .setDescription(`El usuario ${member} ha sido muteado durante ${muteTime * 60000} minutos`)
+                .setFooter(`Usuario muteado por el moderador ${user}`)
+                .setColor(f10750)
+
+
+            // envia el embed
+            canalModeracion.send({ embeds: [muteEmbed]})
+
             // Desmutear después de un tiempo
             setTimeout(() => {
 
