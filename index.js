@@ -216,7 +216,7 @@ client.on('messageCreate', async message => {
         }
     }
 
-    if(command === 'ban') {
+    if(command === 'kick') {
         
         // comprueba los permisos del autor del comando
         if (!message.member.permissions.has('KICK_MEMBERS')) {
