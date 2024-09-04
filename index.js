@@ -20,6 +20,8 @@ const reactionsTimeLimit = 1800000;
 const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
 
+let estadoServidor = false;
+
 
 // ----------------------------- EMBEDS ------------------------------------------
 
@@ -32,6 +34,7 @@ const embedVotacion = new EmbedBuilder()
 const embedAbrirServidor = new EmbedBuilder()
     .setTitle('🟢🟢🟢 Servidor Abierto 🟢🟢🟢')
     .setDescription('Vamos todo el mundo a rolear!')
+    .setFooter({text:'⚙️ CÓDIGO : dubairpesp'})
     .setColor('47eb00');
 
 const embedCerrarServidor = new EmbedBuilder()
@@ -104,6 +107,9 @@ client.on('messageCreate', async message => {
                 // envia embed de abrir servidor
                 canalServidor.send({ embeds: [embedAbrirServidor] });
 
+                // actualiza estado del servidor
+                estadoServidor = true
+
                 // dejar de recolectar reacciones
                 collector.stop();
             }
@@ -117,12 +123,28 @@ client.on('messageCreate', async message => {
 
     // abrir server manualmente
     if(command === 'abrir-servidor') {
+
+        // embed
         canalServidor.send({ embeds: [embedAbrirServidor]})
+
+        // abrir server
+        estadoServidor = true
     }
 
     // cerrar servidor
     if(command === 'cerrar-servidor') {
+
+        // envia embed
         canalServidor.send({ embeds: [embedCerrarServidor]})
+
+        // cerrar server
+        estadoServidor = false
+    }
+
+    if(command === 'estado-servidor') {
+        estadoServidor 
+            ? message.channel.send({ embeds: [embedAbrirServidor]})
+            : message.channel.send({ embeds: [embedCerrarServidor]})
     }
 });
 
