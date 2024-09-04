@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder, channelLink } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 require('dotenv').config(); // Cargar variables de entorno
 
 const client = new Client({
@@ -178,6 +178,40 @@ client.on('messageCreate', async message => {
 
 
     // COMANDOS DE MODERACION
+
+    // comando de kick
+    if(command === 'kick') {
+
+        // comprueba si el usuario tiene permisos
+        if(!message.member.permissions.has('KickMembers')) return message.reply('⛔ No tienes permisos para usar este comando')
+
+        // obtener argumentos del comando
+        const member = message.mentions.members.first()
+        const reason = args.slice(1).join(' ') || '⚠️ No has proporcionado un motivo. Revisa la estructura del comando con !help'   
+
+        // verifica si se menciono a algun usuario
+        if(!member) return message.reply('⚠️ No has mencionado a ningún usuario. Revisa la estructura del comando con !help')
+
+
+        // crear embed
+        const embedKick = new EmbedBuilder()
+            .setTitle('Moderación Dubai RP')
+            .setDescription(`El usuario ${member} ha sido expulsado del servidor 🚀`)
+            .setFooter(`Acción realizada por el moderador ${message.member}`)
+            .setColor(cf0911)
+
+        // expulsar al usuario
+        try
+        {
+            await member.kick(reason)
+            canalModeracion.send({ embeds: embedKick})
+        }
+        catch (error)
+        {
+            console.log(error)
+            message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
+        }
+    }
 });
 
 client.login(process.env.DISCORD_TOKEN);
