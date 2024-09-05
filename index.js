@@ -19,7 +19,7 @@ const reactionsTimeLimit = 1800000;
 
 const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
-const canalModeracionID = '1280542954385309796'
+const canalModeracionID = '1280542954796220467'
 
 let estadoServidor = false; // bool de estado del servidor
 
