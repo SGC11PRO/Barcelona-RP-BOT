@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.8.4`'
+const version = '`^1.8.5`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -338,7 +338,7 @@ client.on('messageCreate', async message => {
     if (command === 'version')
     {
         message.reply({
-            content: `V. ${version}`,
+            content: version,
             ephemeral: true // mensaje solo visible para el autor del comando
         })
     }
