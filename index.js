@@ -37,6 +37,9 @@ const embedVotacion = new EmbedBuilder()
 const embedAbrirServidor = new EmbedBuilder()
     .setTitle('🟢🟢🟢 Servidor Abierto 🟢🟢🟢')
     .setDescription('Vamos todo el mundo a rolear!')
+    .addFields(
+        { name: 'Aviso', value: 'Se hace un llamamiento a todos los <@&1280905403882016879> disponibles'}
+    )
     .setFooter({text:'⚙️ CÓDIGO : dubairpesp'})
     .setColor('47eb00');
 
