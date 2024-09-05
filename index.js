@@ -58,6 +58,7 @@ const helpEmbed = new EmbedBuilder()
         { name: '!cerrar-servidor', value: 'Cierra el servidor manualmente'},
         { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
         { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
+        { name: '!unban [user] [motivo]', value: 'Desbanea a un usuario'},
         { name: '!kick [user] [motivo]', value: 'Expulsa a un usuario del servidor'},
     )
     .setColor('484e55')
