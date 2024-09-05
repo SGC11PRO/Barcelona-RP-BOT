@@ -62,9 +62,6 @@ const helpEmbed = new EmbedBuilder()
         { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
         { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
         { name: '!kick [user] [motivo]', value: 'Expulsa a un usuario del servidor'},
-        { name: '!mute [user] [tiempo (en minutos)]', value: 'Mutea a un usuario'},
-        { name: '!unmute [user]', value: 'Desmutea a un usuario'},
-        { name: '!ping', value: 'Sorpresa'},
     )
     .setColor('484e55')
 
@@ -203,8 +200,8 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedKick = new EmbedBuilder()
             .setTitle('Moderación Dubai RP')
-            .setDescription(`El usuario ${member} ha sido expulsado del servidor 🚀`)
-            .setFooter({text: `Acción realizada por el moderador ${message.member}`})
+            .setDescription(`El usuario ${member.tag} ha sido expulsado del servidor 🚀`)
+            .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
             .setColor('cf0911')
 
         // expulsar al usuario
@@ -220,6 +217,45 @@ client.on('messageCreate', async message => {
                 console.log(error)
                 message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
             }
+        }
+    }
+
+    // comando de ban
+    if(command === 'ban')
+    {
+        // obtener argumentos
+        const args = message.content.split(' ')
+        const user = message.mentions.members.first()
+        const reason = args.slice(2).join(' ') || 'No se proporcionó una razón';
+
+        // comprobar si tiene permisos
+        if(!message.member.permissions.has('BanMembers')) return message.reply('⛔ No tienes permisos para usar este comando')
+
+        // verifica si se han especificado los argumentos del comando
+        if(!user) return message.reply('⚠️ No has mencionado a ningún usuario. Revisa la estructura del comando con !help')
+        if(!reason) return message.reply('⚠️ No has proporcionado un motivo. Revisa la estructura del comando con !help')
+
+        // accede al id del miembro a banear
+        const member = message.guild.members.cache.get(user.id)
+        if(!member) return message.reply('⭕ El usuario no se encuentra en el servidor ⭕')
+
+        // crear embed
+        const embedBan = new EmbedBuilder()
+        .setTitle('Moderación Dubai RP')
+        .setDescription(`El usuario ${user.tag} ha sido baneado del servidor 🚀`)
+        .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
+        .setColor('cf0911')
+
+        // intentar banear al usuario
+        try
+        {
+            await member.ban({ reason })
+            canalModeracion.send({ embeds: [embedBan]})
+        }
+        catch (err)
+        {
+            message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
+            console.log(err)
         }
     }
 });
