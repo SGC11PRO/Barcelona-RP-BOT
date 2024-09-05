@@ -23,9 +23,6 @@ const canalModeracionID = '1280542954796220467'
 
 let estadoServidor = false; // bool de estado del servidor
 
-const dniDatabase = new Map() // Almacenamiento de DNIs
-
-
 // ----------------------------- EMBEDS ------------------------------------------
 
 const embedVotacion = new EmbedBuilder()
