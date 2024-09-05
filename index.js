@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '1.8.2'
+const version = '`^1.8.3`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -69,7 +69,7 @@ const helpEmbed = new EmbedBuilder()
 const infoEmbed = new EmbedBuilder()
     .setTitle('Dubai RP')
     .setDescription('Bienvenido al servidor de roleplay de **Dubai RP**')
-    .addFields({ name: 'Código de ER:LC', value: 'dubairpesp'})
+    .addFields({ name: 'Código de ER:LC', value: '`dubairpesp`'})
     .setFooter({text: 'Dubai RP'})
     .setColor('ffc000')
 
