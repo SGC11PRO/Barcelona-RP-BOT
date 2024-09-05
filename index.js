@@ -53,6 +53,7 @@ const helpEmbed = new EmbedBuilder()
     .addFields(
         { name: '!help', value: 'Muestra esta ayuda.' },
         { name: '!info', value: 'Proporciona información sobre el servidor.' },
+        { name: '!version', value: 'Muestra la version actual del bot'},
         { name: '!ping', value: 'Sorpresa...'},
         { name: '!hola', value: 'Te da la bienvenida'},
         { name: '!votacion-servidor', value: 'Abre votacion para abrir server'},
