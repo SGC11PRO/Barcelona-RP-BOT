@@ -146,21 +146,36 @@ client.on('messageCreate', async message => {
     // abrir server manualmente
     if(command === 'abrir-servidor') {
 
-        // embed
-        canalServidor.send({ embeds: [embedAbrirServidor]})
-
-        // abrir server
-        estadoServidor = true
+        if(!estadoServidor) // solo si el servidor antes estaba cerrado
+        {
+            // embed
+            canalServidor.send({ embeds: [embedAbrirServidor]})
+    
+            // abrir server
+            estadoServidor = true
+        }
+        else
+        {
+            message.reply('⚠️ Debe cerrarse el servidor antes de volver a abrirlo ⚠️')
+        }
     }
 
     // cerrar servidor
     if(command === 'cerrar-servidor') {
 
-        // envia embed
-        canalServidor.send({ embeds: [embedCerrarServidor]})
+        if(estadoServidor) // solo si antes estaba abierto
+        {
+            // envia embed
+            canalServidor.send({ embeds: [embedCerrarServidor]})
+    
+            // cerrar server
+            estadoServidor = false
 
-        // cerrar server
-        estadoServidor = false
+        }
+        else
+        {
+            message.reply('⚠️ Debe abrise el servidor antes de volver a cerrarlo ⚠️')
+        }
     }
 
     // comando de estado del servidor
