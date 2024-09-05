@@ -157,6 +157,7 @@ client.on('messageCreate', async message => {
         else
         {
             message.reply('⚠️ Debe cerrarse el servidor antes de volver a abrirlo ⚠️')
+            console.log('Se ha intentado abrir el servidor una vez abierto')
         }
     }
 
@@ -175,6 +176,7 @@ client.on('messageCreate', async message => {
         else
         {
             message.reply('⚠️ Debe abrise el servidor antes de volver a cerrarlo ⚠️')
+            console.log('Se ha intentado cerrar el servidor antes de abrirlo')
         }
     }
 
@@ -268,6 +270,50 @@ client.on('messageCreate', async message => {
         {
             message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕')
             console.log(err)
+        }
+    }
+
+
+    // comando para desbanear
+    if(command === 'unban')
+    {
+        // extraer argumentos
+        const args = message.content.split(' ');
+        const userId = args[1];
+        const reason = args.slice(2).join(' ') || 'No se proporcionó una razón';
+
+        // comprobar que se especifican los argumentos necesarios
+        if (!message.member.permissions.has('BAN_MEMBERS')) return message.reply('⛔ No tienes permisos para usar este comando');
+        if (!userId) return message.reply('⚠️ No has proporcionado un ID valido. Revisa la estructura del comando con !help');
+
+        // crear embed
+        const embedUnban = new EmbedBuilder()
+        .setTitle('Moderación Dubai RP')
+        .setDescription(`El usuario ${userId.tag} ha sido desbaneado del servidor 🚀`)
+        .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
+        .setColor('cf0911')
+
+        try {
+
+            // accede al usuario baneado
+            const bannedUser = await message.guild.bans.fetch(userId);
+
+
+            if (!bannedUser) {
+                return message.reply('⭕ El usuario no se encuentra baneado ⭕');
+            }
+
+            // desbanea el usuario
+            await message.guild.members.unban(userId, reason);
+
+            // envia embed
+            canalModeracion.send({ embeds: [embedUnban]})
+
+        } 
+        catch (error) 
+        {
+            message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕');
+            console.error(error);
         }
     }
 });
