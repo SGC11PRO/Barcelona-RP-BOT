@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.8.3`'
+const version = '`^1.8.4`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -267,7 +267,7 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedBan = new EmbedBuilder()
         .setTitle('Moderación Dubai RP')
-        .setDescription(`El usuario ${user.tag} ha sido baneado del servidor 🚀`)
+        .setDescription(`El usuario ${user.tag} ha sido baneado del servidor ⛔`)
         .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
         .setColor('cf0911')
 
@@ -300,7 +300,7 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedUnban = new EmbedBuilder()
         .setTitle('Moderación Dubai RP')
-        .setDescription(`El usuario ${userId.tag} ha sido desbaneado del servidor 🚀`)
+        .setDescription(`El usuario ${userId.tag} ha sido desbaneado del servidor 🚫`)
         .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
         .setColor('cf0911')
 
