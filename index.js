@@ -13,6 +13,8 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
+const version = '1.8.2'
+
 const prefix = '!';
 const requiredReactions = 5;
 const reactionsTimeLimit = 1800000;
@@ -63,6 +65,13 @@ const helpEmbed = new EmbedBuilder()
     )
     .setColor('484e55')
 
+const infoEmbed = new EmbedBuilder()
+    .setTitle('Dubai RP')
+    .setDescription('Bienvenido al servidor de roleplay de **Dubai RP**')
+    .addFields({ name: 'Código de ER:LC', value: 'dubairpesp'})
+    .setFooter({text: 'Dubai RP'})
+    .setColor('ffc000')
+
 
 // ----------------------------- EVENTOS ------------------------------------------
 
@@ -83,12 +92,12 @@ client.on('messageCreate', async message => {
     
     // comando ping pong
     if (command === 'ping') {
-        message.channel.send('pong!');
+        message.reply('pong!');
     }
 
     // comando para bienvenida en el server
     if (command === 'hola') {
-        message.channel.send(`¡Hola! Bienvenido a **${message.guild.name}**`);
+        message.reply(`¡Hola! Bienvenido a **${message.guild.name}**`);
     }
 
     // comando para iniciar votacion de abrir server
@@ -184,12 +193,12 @@ client.on('messageCreate', async message => {
     // comando de estado del servidor
     if(command === 'estado-servidor') {
         estadoServidor 
-            ? message.channel.send({ embeds: [embedAbrirServidor]})
-            : message.channel.send({ embeds: [embedCerrarServidor]})
+            ? message.reply({ embeds: [embedAbrirServidor]})
+            : message.reply({ embeds: [embedCerrarServidor]})
     }
 
     // comando de ayuda
-    if(command === 'help') message.channel.send({ embeds: [helpEmbed]})
+    if(command === 'help') message.reply({ embeds: [helpEmbed]})
 
 
     // COMANDOS DE MODERACION
@@ -316,6 +325,21 @@ client.on('messageCreate', async message => {
             message.reply('⭕ Ha ocurrido un error. Intentalo de nuevo más tarde o contacta con el soporte del servidor ⭕');
             console.error(error);
         }
+    }
+
+    // comando de info del server
+    if (command === 'info')
+    {
+        message.reply({embeds: [infoEmbed]})
+    }
+
+    // comando para la version del vot
+    if (command === 'version')
+    {
+        message.reply({
+            content: `V. ${version}`,
+            ephemeral: true // mensaje solo visible para el autor del comando
+        })
     }
 });
 
