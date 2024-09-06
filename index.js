@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { Client, EmbedBuilder } = require('discord.js');
 require('dotenv').config(); // Cargar variables de entorno
 
 const client = new Client({
@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.10.0`'
+const version = '`^1.10.2`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -81,20 +81,39 @@ const infoEmbed = new EmbedBuilder()
 
 // ----------------------------- OTROS ------------------------------------------
 
-const multas = [];
+    const fs = require('fs');
+    const path = './multas.json'; // Archivo donde se almacenarán las multas
 
-// Función para agregar una multa
-function agregarMulta(agente, afectado, articulo, condena) {
-    const nuevaMulta = {
-        agente: agente.username,
-        afectadoId: afectado.id,
-        afectadoUsername: afectado.username,
-        articulo: articulo,
-        condena: condena,
-        fecha: new Date()
-    };
-    multas.push(nuevaMulta);
-}
+    // Leer multas desde el archivo JSON
+    function leerMultas() {
+        if (!fs.existsSync(path)) {
+            fs.writeFileSync(path, JSON.stringify([]));
+        }
+        const data = fs.readFileSync(path);
+        return JSON.parse(data);
+    }
+
+    // Escribir multas en el archivo JSON
+    function guardarMultas() {
+        fs.writeFileSync(path, JSON.stringify(multas, null, 2)); // null, 2 es para formatear el JSON
+    }
+
+    const multas = leerMultas();
+
+    // Función para agregar una multa
+    function agregarMulta(agente, afectado, articulo, condena) {
+        const nuevaMulta = {
+            agente: agente.username,
+            afectadoId: afectado.id,
+            afectadoUsername: afectado.username,
+            articulo: articulo,
+            condena: condena,
+            fecha: new Date()
+        };
+
+        multas.push(nuevaMulta);
+        guardarMultas();
+    }
 
 
 // ----------------------------- EVENTOS ------------------------------------------
@@ -442,49 +461,51 @@ client.on('messageCreate', async message => {
         message.reply(`Multa registrada correctamente en el canal de multas para ${afectado.username}.`);
     }
 
-    // ver multas
-    if(command === 'pda')
-    {
+    // Ver multas
+    if (command === 'pda') {
 
-        // extraer argumentos
+        // Extraer argumentos
         const args = message.content.split(' ');
-        const userId = args[1]?.replace('<@!', '').replace('>', ''); // ID del usuario mencionado
+        let userId = args[1]?.replace('<@!', '').replace('>', '');
 
-        // falta de argumentos
+        // Elimina simbolos innecesarios para quedarse solo con la ID del usuario
+        if (userId.startsWith('<@')) userId = userId.slice(2);
+
+        console.log(multas);
+        console.log(userId)
+
+        // Falta de argumentos
         if (!userId) return message.reply('⚠️ Debes mencionar a un usuario para ver sus multas');
 
-
-        // filtrar multas del usuario
+        // Filtrar multas del usuario
         const multasUsuario = multas.filter(multa => multa.afectadoId === userId);
 
-        // embed 0 multas
-        const embedLimpio = new EmbedBuilder ()
+        // Embed 0 multas
+        const embedLimpio = new EmbedBuilder()
             .setTitle('PDA')
             .setDescription('Este usuario no tiene multas')
-            .setColor('Blue')
+            .setColor('Blue');
 
-        // en el caso de que el usuario no tenga multas
-        if (multasUsuario.length === 0) return canalMultas.send({ embeds: [embedLimpio]})
+        // En el caso de que el usuario no tenga multas
+        if (multasUsuario.length === 0) return canalMultas.send({ embeds: [embedLimpio] });
 
-        // nuevo embed con un campo por cada multa
+        // Nuevo embed con un campo por cada multa
         const embedMultas = new EmbedBuilder()
             .setTitle(`Multas de ${message.guild.members.cache.get(userId).user.username}`)
             .setColor('Blue');
 
         multasUsuario.forEach(multa => {
-            embed.addFields(
+            embedMultas.addFields(
                 { name: 'Artículo', value: multa.articulo, inline: true },
-                { name: 'Monto/Condena', value: multa.cantidad, inline: true },
-                { name: 'Fecha', value: multa.fecha.toLocaleString(), inline: false }
+                { name: 'Condena', value: multa.condena, inline: true }, // Asegúrate de que el campo sea 'condena'
+                { name: 'Fecha', value: new Date(multa.fecha).toLocaleString(), inline: false }
             );
         });
 
-        // envia el embed
+        // Envía el embed
         canalMultas.send({ embeds: [embedMultas] });
     }
 });
-
-
 
 
 client.login(process.env.DISCORD_TOKEN);
