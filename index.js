@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.11.0`'
+const version = '`^1.11.1`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -458,7 +458,7 @@ client.on('messageCreate', async message => {
         // Enviar el embed en el canal
         canalMultas.send({ embeds: [embed] });
 
-        message.reply(`Multa registrada correctamente en el canal de multas para ${afectado.username}.`);
+        message.reply(`Multa registrada correctamente en el canal de multas para @${afectado.username}.`);
     }
 
     // Ver multas
