@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.10.2`'
+const version = '`^1.11.0`'
 
 const prefix = '!';
 const requiredReactions = 5;
