@@ -66,7 +66,7 @@ const helpEmbed = new EmbedBuilder()
         { name: '!unban [user] [motivo]', value: 'Desbanea a un usuario'},
         { name: '!kick [user] [motivo]', value: 'Expulsa a un []usuario del servidor'},
         { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
-        { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'}
+        { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'},
         { name: '!pda [user]', value: 'Consulta las multas de un usuario'}
     )
     .setColor('484e55')
