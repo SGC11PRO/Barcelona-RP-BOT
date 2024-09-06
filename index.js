@@ -494,8 +494,9 @@ client.on('messageCreate', async message => {
             .setTitle(`Multas de ${message.guild.members.cache.get(userId).user.username}`)
             .setColor('Blue');
 
-        multasUsuario.forEach(multa => {
+        multasUsuario.forEach((multa, index)=> {
             embedMultas.addFields(
+                { name: 'Índice', value: `${index}`, inline: true },
                 { name: 'Artículo', value: multa.articulo, inline: true },
                 { name: 'Condena', value: multa.condena, inline: true }, // Asegúrate de que el campo sea 'condena'
                 { name: 'Fecha', value: new Date(multa.fecha).toLocaleString(), inline: false }
@@ -504,6 +505,46 @@ client.on('messageCreate', async message => {
 
         // Envía el embed
         canalMultas.send({ embeds: [embedMultas] });
+    }
+
+    // eliminar multa
+    if(command === 'eliminar-multa') 
+    {
+        // Verificar si el usuario tiene el rol necesario
+        if (!message.member.roles.cache.has('1280542954351628327') || !message.member.roles.cache.has('1280905403882016879') ) {
+            return message.reply('⛔ Solo los moderadores / staffs pueden usar este comando');
+        }
+
+        // Extraer argumentos
+        const args = message.content.split(' ');
+        const userId = args[1]?.replace('<@!', '').replace('>', ''); // ID del usuario mencionado
+        const multaIndex = parseInt(args[2], 10); // Índice de la multa a eliminar
+
+        // Elimina simbolos innecesarios para quedarse solo con la ID del usuario
+        if (userId.startsWith('<@')) userId = userId.slice(2);
+
+        if (!userId || isNaN(multaIndex)) {
+            return message.reply('⚠️ Uso incorrecto del comando. Debes mencionar al usuario y el índice de la multa. Usa !help para más información');
+        }
+
+        // Leer multas desde el archivo JSON
+        const multas = leerMultas();
+
+        // Encontrar las multas del usuario
+        const multasUsuario = multas.filter(multa => multa.afectadoId === userId);
+
+        if (multasUsuario.length <= multaIndex) {
+            return message.reply('⚠️ El índice de la multa es inválido.');
+        }
+
+        // Eliminar la multa especificada
+        multas.splice(multas.indexOf(multasUsuario[multaIndex]), 1);
+
+        // Guardar cambios en el archivo JSON
+        guardarMultas();
+
+        // Confirmar eliminación
+        message.reply('✅ La multa ha sido eliminada correctamente.');
     }
 });
 
