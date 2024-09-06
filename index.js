@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.11.1`'
+const version = '`^1.11.2`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -67,7 +67,8 @@ const helpEmbed = new EmbedBuilder()
         { name: '!kick [user] [motivo]', value: 'Expulsa a un []usuario del servidor'},
         { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
         { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'},
-        { name: '!pda [user]', value: 'Consulta las multas de un usuario'}
+        { name: '!pda [user]', value: 'Consulta las multas de un usuario'},
+        { name: '!eliminarmulta [user] [index]', value: 'Elimina la multa especifica de un usuario'},
     )
     .setColor('484e55')
 
@@ -508,7 +509,7 @@ client.on('messageCreate', async message => {
     }
 
     // eliminar multa
-    if(command === 'eliminar-multa') 
+    if(command === 'eliminarmulta') 
     {
         // Verificar si el usuario tiene el rol necesario
         if (!message.member.roles.cache.has('1280542954351628327') || !message.member.roles.cache.has('1280905403882016879') ) {
@@ -524,7 +525,7 @@ client.on('messageCreate', async message => {
         if (userId.startsWith('<@')) userId = userId.slice(2);
 
         if (!userId || isNaN(multaIndex)) {
-            return message.reply('⚠️ Uso incorrecto del comando. Debes mencionar al usuario y el índice de la multa. Usa !help para más información');
+            return message.reply('⚠️ Uso incorrecto del comando. Uso :  !eliminarmulta @usuario indice. Usa !help para más información');
         }
 
         // Leer multas desde el archivo JSON
