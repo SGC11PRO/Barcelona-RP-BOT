@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.9.0`'
+const version = '`^1.10.0`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -23,6 +23,7 @@ const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
 const canalModeracionID = '1280542954796220467'
 const canalDenunciasID = '1281652489334296636'
+const canalMultasID = '1280542958487080963'
 
 let estadoServidor = false; // bool de estado del servidor
 
@@ -64,7 +65,9 @@ const helpEmbed = new EmbedBuilder()
         { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
         { name: '!unban [user] [motivo]', value: 'Desbanea a un usuario'},
         { name: '!kick [user] [motivo]', value: 'Expulsa a un []usuario del servidor'},
-        { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'}
+        { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
+        { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'}
+        { name: '!pda [user]', value: 'Consulta las multas de un usuario'}
     )
     .setColor('484e55')
 
@@ -76,6 +79,22 @@ const infoEmbed = new EmbedBuilder()
     .setColor('ffc000')
 
 
+// ----------------------------- OTROS ------------------------------------------
+
+const multas = [];
+
+// Función para agregar una multa
+function agregarMulta(agente, afectado, articulo, condena) {
+    const nuevaMulta = {
+        agente: agente.username,
+        afectadoId: afectado.id,
+        afectadoUsername: afectado.username,
+        articulo: articulo,
+        condena: condena,
+        fecha: new Date()
+    };
+    multas.push(nuevaMulta);
+}
 
 
 // ----------------------------- EVENTOS ------------------------------------------
@@ -93,6 +112,7 @@ client.on('messageCreate', async message => {
     const canalModeracion = client.channels.cache.get(canalModeracionID)
 
     const canalDenuncias = client.channels.cache.get(canalDenunciasID)
+    const canalMultas = client.channels.cache.get(canalMultasID)
 
 
     // ----------------------------- COMANDOS ------------------------------------------
@@ -381,6 +401,90 @@ client.on('messageCreate', async message => {
         // envia embed
         canalDenuncias.send({ embeds: [embedDenuncia]})
     }
+
+    // añadir multas
+    if(command === 'multar')
+    {
+        // Verificar si el usuario tiene el rol necesario
+        if (!message.member.roles.cache.has('1280542954326593611') || !message.member.roles.cache.has('1280542954301161500') ) {
+            return message.reply('⛔ Solo los cuerpos de seguridad pueden usar este comando');
+        }
+
+        // extraer argumentos
+        const args = message.content.split(' ');
+        const afectado = message.mentions.users.first(); // Menciona al usuario afectado
+        const articulo = args[2]; // Artículo de la multa
+        const condena = args.slice(3).join(' '); // Monto o condena
+
+        // falta de argumentos
+        if (!afectado || !articulo || !condena) {
+            return message.reply('⚠️ No has rellenado todos los campos. \nUso : !multar @usuario [artículo] [cantidad/condena]');
+        }
+
+        // Agregar la multa
+        agregarMulta(message.author, afectado, articulo, condena);
+
+        // Crear embed para la multa
+        const embed = new EmbedBuilder()
+            .setTitle('Policía de Dubai')
+            .setColor('FF0000')
+            .addFields(
+                { name: 'Agente', value: message.author.username, inline: true },
+                { name: 'Afectado', value: afectado.username, inline: true },
+                { name: 'Artículo', value: articulo, inline: true },
+                { name: 'Monto/Condena', value: condena, inline: true }
+            )
+            .setFooter({ text: `Fecha: ${new Date().toLocaleString()}` });
+
+        // Enviar el embed en el canal
+        canalMultas.send({ embeds: [embed] });
+
+        message.reply(`Multa registrada correctamente en el canal de multas para ${afectado.username}.`);
+    }
+
+    // ver multas
+    if(command === 'pda')
+    {
+
+        // extraer argumentos
+        const args = message.content.split(' ');
+        const userId = args[1]?.replace('<@!', '').replace('>', ''); // ID del usuario mencionado
+
+        // falta de argumentos
+        if (!userId) return message.reply('⚠️ Debes mencionar a un usuario para ver sus multas');
+
+
+        // filtrar multas del usuario
+        const multasUsuario = multas.filter(multa => multa.afectadoId === userId);
+
+        // embed 0 multas
+        const embedLimpio = new EmbedBuilder ()
+            .setTitle('PDA')
+            .setDescription('Este usuario no tiene multas')
+            .setColor('Blue')
+
+        // en el caso de que el usuario no tenga multas
+        if (multasUsuario.length === 0) return canalMultas.send({ embeds: [embedLimpio]})
+
+        // nuevo embed con un campo por cada multa
+        const embedMultas = new EmbedBuilder()
+            .setTitle(`Multas de ${message.guild.members.cache.get(userId).user.username}`)
+            .setColor('Blue');
+
+        multasUsuario.forEach(multa => {
+            embed.addFields(
+                { name: 'Artículo', value: multa.articulo, inline: true },
+                { name: 'Monto/Condena', value: multa.cantidad, inline: true },
+                { name: 'Fecha', value: multa.fecha.toLocaleString(), inline: false }
+            );
+        });
+
+        // envia el embed
+        canalMultas.send({ embeds: [embedMultas] });
+    }
 });
+
+
+
 
 client.login(process.env.DISCORD_TOKEN);
