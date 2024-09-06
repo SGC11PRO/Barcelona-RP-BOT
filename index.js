@@ -7,13 +7,13 @@ const client = new Client({
 
 
 client.once('ready', () => {
-    console.log(`[!] BOT ACTIVO : Iniciado como ${client.user.tag}`);
+    console.log(`[!] BOT ACTIVO : Iniciado como ${client.user.username}`);
 });
 
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.8.5`'
+const version = '`^1.9.0`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -22,6 +22,7 @@ const reactionsTimeLimit = 1800000;
 const canalVotacionID = '1280835452068433981';
 const canalServidorID = '1280542955202941128';
 const canalModeracionID = '1280542954796220467'
+const canalDenunciasID = '1281652489334296636'
 
 let estadoServidor = false; // bool de estado del servidor
 
@@ -62,7 +63,8 @@ const helpEmbed = new EmbedBuilder()
         { name: '!estado-servidor', value: 'Comprueba el estado del servidor'},
         { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
         { name: '!unban [user] [motivo]', value: 'Desbanea a un usuario'},
-        { name: '!kick [user] [motivo]', value: 'Expulsa a un usuario del servidor'},
+        { name: '!kick [user] [motivo]', value: 'Expulsa a un []usuario del servidor'},
+        { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'}
     )
     .setColor('484e55')
 
@@ -72,6 +74,8 @@ const infoEmbed = new EmbedBuilder()
     .addFields({ name: 'Código de ER:LC', value: '`dubairpesp`'})
     .setFooter({text: 'Dubai RP'})
     .setColor('ffc000')
+
+
 
 
 // ----------------------------- EVENTOS ------------------------------------------
@@ -87,6 +91,8 @@ client.on('messageCreate', async message => {
     const canalServidor = client.channels.cache.get(canalServidorID);
 
     const canalModeracion = client.channels.cache.get(canalModeracionID)
+
+    const canalDenuncias = client.channels.cache.get(canalDenunciasID)
 
 
     // ----------------------------- COMANDOS ------------------------------------------
@@ -225,8 +231,8 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedKick = new EmbedBuilder()
             .setTitle('Moderación Dubai RP')
-            .setDescription(`El usuario ${member.tag} ha sido expulsado del servidor 🚀`)
-            .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
+            .setDescription(`El usuario ${member.username} ha sido expulsado del servidor 🚀`)
+            .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
             .setColor('cf0911')
 
         // expulsar al usuario
@@ -267,8 +273,8 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedBan = new EmbedBuilder()
         .setTitle('Moderación Dubai RP')
-        .setDescription(`El usuario ${user.tag} ha sido baneado del servidor ⛔`)
-        .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
+        .setDescription(`El usuario ${user.username} ha sido baneado del servidor ⛔`)
+        .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
         .setColor('cf0911')
 
         // intentar banear al usuario
@@ -300,8 +306,8 @@ client.on('messageCreate', async message => {
         // crear embed
         const embedUnban = new EmbedBuilder()
         .setTitle('Moderación Dubai RP')
-        .setDescription(`El usuario ${userId.tag} ha sido desbaneado del servidor 🚫`)
-        .setFooter({text: `Acción realizada por el moderador ${message.member.tag}`})
+        .setDescription(`El usuario ${userId.username} ha sido desbaneado del servidor 🚫`)
+        .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
         .setColor('cf0911')
 
         try {
@@ -341,6 +347,39 @@ client.on('messageCreate', async message => {
             content: version,
             ephemeral: true // mensaje solo visible para el autor del comando
         })
+    }
+
+    // comando para la denuncia
+    if(command === 'denunciar')
+    {
+        // extrae argumentos
+        const args = message.content.split(' ').slice(1);
+        const denunciante = message.author;
+        const denunciado = message.mentions.users.first();
+        const abogado = message.mentions.roles.first();
+        const descripcion = args.slice(3).join(' ');
+
+        // embed
+        const embedDenuncia = new EmbedBuilder()
+            .setTitle('Ministerio de Justicia')
+            .addFields
+            (
+                { name: 'Denunciante', value: `${denunciante}`, inline: true },
+                { name: 'Denunciado', value: `${denunciado}`, inline: true },
+                { name: 'Abogado', value: abogado ? `${abogado}` : 'No asignado', inline: true },
+                { name: 'Descripción', value: descripcion, inline: false }
+            )
+            .setColor('FF0000')
+            .setFooter({ text: `Denuncia presentada por: ${denunciante.username}` });
+
+        
+        // faltan argumentos
+        if (!denunciado || !descripcion) {
+            return message.channel.send('⚠️ No has rellenado todos los campos. \nUso : !denuncia @denunciado @abogado(opcional) descripcion');
+        }
+
+        // envia embed
+        canalDenuncias.send({ embeds: [embedDenuncia]})
     }
 });
 
