@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.11.2`'
+const version = '`^1.11.3`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -99,7 +99,7 @@ const infoEmbed = new EmbedBuilder()
         fs.writeFileSync(path, JSON.stringify(multas, null, 2)); // null, 2 es para formatear el JSON
     }
 
-    const multas = leerMultas();
+    let multas = leerMultas();
 
     // Función para agregar una multa
     function agregarMulta(agente, afectado, articulo, condena) {
@@ -465,6 +465,8 @@ client.on('messageCreate', async message => {
     // Ver multas
     if (command === 'pda') {
 
+        multas = leerMultas()
+
         // Extraer argumentos
         const args = message.content.split(' ');
         let userId = args[1]?.replace('<@!', '').replace('>', '');
@@ -511,6 +513,7 @@ client.on('messageCreate', async message => {
     // eliminar multa
     if(command === 'eliminarmulta') 
     {
+
         // Verificar si el usuario tiene el rol necesario
         if (!message.member.roles.cache.has('1280542954351628327') || !message.member.roles.cache.has('1280905403882016879') ) {
             return message.reply('⛔ Solo los moderadores / staffs pueden usar este comando');
@@ -529,13 +532,14 @@ client.on('messageCreate', async message => {
         }
 
         // Leer multas desde el archivo JSON
-        const multas = leerMultas();
+        multas = leerMultas();
 
         // Encontrar las multas del usuario
         const multasUsuario = multas.filter(multa => multa.afectadoId === userId);
 
+        // si no se encuentra la multa
         if (multasUsuario.length <= multaIndex) {
-            return message.reply('⚠️ El índice de la multa es inválido.');
+            return message.reply(`⚠️ No existe ninguna multa con índice ${multaIndex}`);
         }
 
         // Eliminar la multa especificada
