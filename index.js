@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.12.2`'
+const version = '`^1.12.3`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -489,7 +489,7 @@ client.on('messageCreate', async message => {
                 )
                 .setColor('FF0000');
 
-            message.channel.send({ embeds: [embedDenuncia] });
+            canalDenuncias.send({ embeds: [embedDenuncia] });
         });
 
     }
