@@ -65,7 +65,7 @@ const helpEmbed = new EmbedBuilder()
         { name: '!ban [user] [motivo]', value: 'Banea a un usuario'},
         { name: '!unban [user] [motivo]', value: 'Desbanea a un usuario'},
         { name: '!kick [user] [motivo]', value: 'Expulsa a un []usuario del servidor'},
-        { name: '!denunciar [denunciado] [denunciante] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
+        { name: '!denunciar [denunciado] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
         { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'},
         { name: '!pda [user]', value: 'Consulta las multas de un usuario'},
         { name: '!eliminarmulta [user] [index]', value: 'Elimina la multa especifica de un usuario'},
@@ -521,8 +521,8 @@ client.on('messageCreate', async message => {
 
         // Extraer argumentos
         const args = message.content.split(' ');
-        const userId = args[1]?.replace('<@!', '').replace('>', ''); // ID del usuario mencionado
-        const multaIndex = parseInt(args[2], 10); // Índice de la multa a eliminar
+        let userId = args[1]?.replace('<@!', '').replace('>', ''); // ID del usuario mencionado
+        let multaIndex = parseInt(args[2], 10); // Índice de la multa a eliminar
 
         // Elimina simbolos innecesarios para quedarse solo con la ID del usuario
         if (userId.startsWith('<@')) userId = userId.slice(2);
@@ -535,7 +535,7 @@ client.on('messageCreate', async message => {
         multas = leerMultas();
 
         // Encontrar las multas del usuario
-        const multasUsuario = multas.filter(multa => multa.afectadoId === userId);
+        let multasUsuario = multas.filter(multa => multa.afectadoId === userId);
 
         // si no se encuentra la multa
         if (multasUsuario.length <= multaIndex) {
