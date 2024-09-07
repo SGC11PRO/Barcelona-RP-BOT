@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.11.4`'
+const version = '`^1.12.2`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -82,6 +82,9 @@ const infoEmbed = new EmbedBuilder()
 
 // ----------------------------- OTROS ------------------------------------------
 
+// ----------------------------- multas ------------------------------------------
+
+
     const fs = require('fs');
     const path = './multas.json'; // Archivo donde se almacenarán las multas
 
@@ -116,6 +119,40 @@ const infoEmbed = new EmbedBuilder()
         guardarMultas();
     }
 
+
+// ----------------------------- denuncias ------------------------------------------
+
+    const pathDenuncias = './denuncias.json'; // Archivo donde se almacenarán las denuncias
+    
+    // Leer denuncias desde el archivo JSON
+    function leerDenuncias() {
+        if (!fs.existsSync(pathDenuncias)) {
+            fs.writeFileSync(pathDenuncias, JSON.stringify([]));
+        }
+        const data = fs.readFileSync(pathDenuncias);
+        return JSON.parse(data);
+    }
+    
+    // Escribir denuncias en el archivo JSON
+    function guardarDenuncias(denuncias) {
+        fs.writeFileSync(pathDenuncias, JSON.stringify(denuncias, null, 2));
+    }
+    
+    // Función para agregar una denuncia
+    function agregarDenuncia(denunciante, denunciado, abogado, descripcion) {
+        const denuncias = leerDenuncias();
+    
+        const nuevaDenuncia = {
+            denunciante: denunciante.username,
+            denunciado: denunciado.username,
+            abogado: abogado ? abogado.username : 'No asignado',
+            descripcion: descripcion,
+            fecha: new Date()
+        };
+    
+        denuncias.push(nuevaDenuncia);
+        guardarDenuncias(denuncias);
+    }
 
 // ----------------------------- EVENTOS ------------------------------------------
 
@@ -389,38 +426,74 @@ client.on('messageCreate', async message => {
         })
     }
 
-    // comando para la denuncia
-    if(command === 'denunciar')
-    {
+        // comando para la denuncia
+    if (command === 'denunciar') {
+
+        if(message.member.roles.cache.has('1280542954108489896')) return message.reply('⛔ Debes estar verificado para usar este comando')
+
         // extrae argumentos
         const args = message.content.split(' ').slice(1);
         const denunciante = message.author;
-        const denunciado = message.mentions.users.first();
-        const abogado = message.mentions.roles.first();
-        const descripcion = args.slice(3).join(' ');
+        const mencionados = message.mentions.users; // Obtener todos los usuarios mencionados
+        const denunciado = mencionados.first(); // Primer usuario mencionado
+        const abogado = mencionados.size > 1 ? mencionados.at(1) : null; // Segundo usuario mencionado (si existe)
+        const descripcion = args.slice(mencionados.size).join(' '); // El resto de los argumentos son la descripción
 
         // embed
         const embedDenuncia = new EmbedBuilder()
             .setTitle('Ministerio de Justicia')
-            .addFields
-            (
+            .addFields(
                 { name: 'Denunciante', value: `${denunciante}`, inline: true },
                 { name: 'Denunciado', value: `${denunciado}`, inline: true },
                 { name: 'Abogado', value: abogado ? `${abogado}` : 'No asignado', inline: true },
                 { name: 'Descripción', value: descripcion, inline: false }
             )
-            .setColor('FF0000')
+            .setColor('Blurple')
             .setFooter({ text: `Denuncia presentada por: ${denunciante.username}` });
 
-        
         // faltan argumentos
         if (!denunciado || !descripcion) {
             return message.channel.send('⚠️ No has rellenado todos los campos. \nUso : !denuncia @denunciado @abogado(opcional) descripcion');
         }
 
+
+        // agrega la denuncia al json
+        agregarDenuncia(denunciante, denunciado, abogado, descripcion)
+
         // envia embed
-        canalDenuncias.send({ embeds: [embedDenuncia]})
+        canalDenuncias.send({ embeds: [embedDenuncia] });
     }
+
+    // Comando para ver todas las denuncias
+    if (command === 'verdenuncias') 
+    {
+        if(!message.member.roles.cache.has('1282058725838032978') || !message.member.roles.cache.has('1282058884353232947')) return message.reply('⛔ Solo los jueces y el ministro de justicia pueden usar este comando')
+
+        // lee las denuncias del json
+        const denuncias = leerDenuncias();
+
+        // comprueba que haya denuncias
+        if (denuncias.length === 0) {
+            return message.channel.send('⚠️ No hay denuncias registradas.');
+        }
+
+        denuncias.forEach(denuncia => {
+            const embedDenuncia = new EmbedBuilder()
+                .setTitle('Denuncias Registradas')
+                .addFields(
+                    { name: 'Denunciante', value: denuncia.denunciante, inline: true },
+                    { name: 'Denunciado', value: denuncia.denunciado, inline: true },
+                    { name: 'Abogado', value: denuncia.abogado, inline: true },
+                    { name: 'Descripción', value: denuncia.descripcion, inline: false },
+                    { name: 'Fecha', value: new Date(denuncia.fecha).toLocaleString(), inline: false }
+                )
+                .setColor('FF0000');
+
+            message.channel.send({ embeds: [embedDenuncia] });
+        });
+
+    }
+
 
     // añadir multas
     if(command === 'multar')
