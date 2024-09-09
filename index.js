@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.12.4`'
+const version = '`^1.13.0`'
 
 const prefix = '!';
 const requiredReactions = 5;
@@ -41,7 +41,7 @@ const embedAbrirServidor = new EmbedBuilder()
     .addFields(
         { name: 'Aviso', value: 'Se hace un llamamiento a todos los <@&1280905403882016879> disponibles'}
     )
-    .setFooter({text:'⚙️ CÓDIGO : dubairpesp'})
+    .setFooter({text:'⚙️ CÓDIGO : brcnrp'})
     .setColor('47eb00');
 
 const embedCerrarServidor = new EmbedBuilder()
@@ -73,10 +73,10 @@ const helpEmbed = new EmbedBuilder()
     .setColor('484e55')
 
 const infoEmbed = new EmbedBuilder()
-    .setTitle('Dubai RP')
-    .setDescription('Bienvenido al servidor de roleplay de **Dubai RP**')
-    .addFields({ name: 'Código de ER:LC', value: '`dubairpesp`'})
-    .setFooter({text: 'Dubai RP'})
+    .setTitle('Barcelona RP')
+    .setDescription('Bienvenido al servidor de roleplay de **Barcelona RP**')
+    .addFields({ name: 'Código de ER:LC', value: '`brcnrp`'})
+    .setFooter({text: 'Barcelona RP'})
     .setColor('ffc000')
 
 
@@ -307,7 +307,7 @@ client.on('messageCreate', async message => {
 
         // crear embed
         const embedKick = new EmbedBuilder()
-            .setTitle('Moderación Dubai RP')
+            .setTitle('Moderación Barcelona RP')
             .setDescription(`El usuario ${member.username} ha sido expulsado del servidor 🚀`)
             .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
             .setColor('cf0911')
@@ -349,7 +349,7 @@ client.on('messageCreate', async message => {
 
         // crear embed
         const embedBan = new EmbedBuilder()
-        .setTitle('Moderación Dubai RP')
+        .setTitle('Moderación Barcelona RP')
         .setDescription(`El usuario ${user.username} ha sido baneado del servidor ⛔`)
         .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
         .setColor('cf0911')
@@ -382,7 +382,7 @@ client.on('messageCreate', async message => {
 
         // crear embed
         const embedUnban = new EmbedBuilder()
-        .setTitle('Moderación Dubai RP')
+        .setTitle('Moderación Barcelona RP')
         .setDescription(`El usuario ${userId.username} ha sido desbaneado del servidor 🚫`)
         .setFooter({text: `Acción realizada por el moderador ${message.member.username}`})
         .setColor('cf0911')
@@ -519,7 +519,7 @@ client.on('messageCreate', async message => {
 
         // Crear embed para la multa
         const embed = new EmbedBuilder()
-            .setTitle('Policía de Dubai')
+            .setTitle('Policía de Barcelona')
             .setColor('FF0000')
             .addFields(
                 { name: 'Agente', value: message.author.username, inline: true },
