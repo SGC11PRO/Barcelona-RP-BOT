@@ -16,7 +16,7 @@ client.once('ready', () => {
 const version = '`^1.13.0`'
 
 const prefix = '!';
-const requiredReactions = 5;
+const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
 const reactionsTimeLimit = 1800000;
 
 const canalVotacionID = '1280835452068433981';
