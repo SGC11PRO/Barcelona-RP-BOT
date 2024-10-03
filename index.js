@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.13.3`'
+const version = '`^1.13.4`'
 
 const prefix = '!';
 const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
@@ -31,7 +31,12 @@ let estadoServidor = false; // bool de estado del servidor
 
 const embedVotacion = new EmbedBuilder()
     .setTitle('Votación para abrir el servidor!')
-    .setDescription(`Reacciona con ✅ para votar! Se necesitan ${requiredReactions - 2} votos para abrir el server`)
+    .addFields(
+        { name: 'Queridos <@&1280542954108489899> hemos decidido hacer una votación de apertura del servidor', value: 'Para que sepamos si quereis uniros al servidor reaccionad en estas instrucciones' },
+        { name: 'Abrir Servidor', value: '✅' },
+        { name: 'Inseguro/a de unirse al servidor', value: '🟧' },
+        { name: 'No abrir servidor', value: '❌' }
+    .setDescription(`El servidor se abrira con ${requiredReactions - 2} votos`)
     .setFooter({ text: 'Los moderadores que quieran moderar que reaccionen con 🛠️' })
     .setColor('ffc000');
 
