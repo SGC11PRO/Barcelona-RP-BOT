@@ -36,6 +36,7 @@ const embedVotacion = new EmbedBuilder()
         { name: 'Abrir Servidor', value: '✅' },
         { name: 'Inseguro/a de unirse al servidor', value: '🟧' },
         { name: 'No abrir servidor', value: '❌' }
+    )
     .setDescription(`El servidor se abrira con ${requiredReactions - 2} votos`)
     .setFooter({ text: 'Los moderadores que quieran moderar que reaccionen con 🛠️' })
     .setColor('ffc000');
