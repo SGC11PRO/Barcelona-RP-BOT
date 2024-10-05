@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.14.2`'
+const version = '`^1.14.3`'
 
 const prefix = '!';
 const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
@@ -166,7 +166,7 @@ const infoEmbed = new EmbedBuilder()
 
 
 // ----------------------------- anuncios ------------------------------------------
-const pathAnuncios = './anuncios.json'
+const pathAnuncios = '/anuncios.json'
 
 function leerAnuncios()
 {
@@ -702,6 +702,8 @@ client.on('messageCreate', async message => {
         // guardar nuevo anuncio
         anuncios.push(nuevoAnuncio)
         guardarAnuncios(anuncios)
+
+        if(anuncios.length > 0) message.reply(anuncios)
 
         // envia confirmacion
         message.reply(`✅ Anuncio programado con éxito para : ${new Date(Date.now() + tiempoMs)}`)
