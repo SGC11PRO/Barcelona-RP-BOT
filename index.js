@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.14.3`'
+const version = '`^1.14.2`'
 
 const prefix = '!';
 const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
@@ -76,7 +76,9 @@ const helpEmbed = new EmbedBuilder()
         { name: '!denunciar [denunciado] [abogado (opcional)] [descripcion]', value: 'Denuncia a un usuario'},
         { name: '!multar [user] [artículo] [cantidad/condena]', value: 'Multa a un usuario'},
         { name: '!pda [user]', value: 'Consulta las multas de un usuario'},
-        { name: '!eliminarmulta [user] [index]', value: 'Elimina la multa especifica de un usuario'},
+        { name: '!eliminar-multa [user] [index]', value: 'Elimina la multa especifica de un usuario'},
+        { name: '!anuncio [tiempo (min)] [anuncio]', value: 'Programa un anuncio para dentro de [tiempo] minutos'},
+        { name: '!ver-anuncios', value: 'Consulta los anuncios programados en el futuro'},
     )
     .setColor('484e55')
 
@@ -618,7 +620,7 @@ client.on('messageCreate', async message => {
     }
 
     // eliminar multa
-    if(command === 'eliminarmulta') 
+    if(command === 'eliminar-multa') 
     {
 
         // Verificar si el usuario tiene el rol necesario
@@ -710,6 +712,35 @@ client.on('messageCreate', async message => {
             canalAnuncios.send(`📣 Nuevo Anuncio : ${contenidoAnuncio}`)
         }, tiempoMs);
 
+    }
+
+
+    // ver anuncios
+    if(command === 'ver-anuncios')
+    {
+        // Leer anuncios desde el archivo JSON
+        const anuncios = leerAnuncios();
+
+        // Verificar si hay anuncios
+        if (anuncios.length === 0) {
+            return message.channel.send('⚠️ No hay anuncios programados.');
+        }
+
+        // Crear un embed para mostrar los anuncios
+        const embedAnuncios = new EmbedBuilder()
+            .setTitle('Anuncios Programados')
+            .setColor('BLUE');
+
+        // Agregar cada anuncio al embed
+        anuncios.forEach((anuncio, index) => {
+            embedAnuncios.addFields(
+                { name: `Anuncio ${index + 1}`, value: anuncio.text, inline: false },
+                { name: 'Programado para', value: `${new Date(anuncio.time).toLocaleString()}`, inline: true }
+            );
+        });
+
+        // Enviar el embed al canal
+        message.reply({ embeds: [embedAnuncios] });
     }
 });
 
