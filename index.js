@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.14.3`'
+const version = '`^1.14.5`'
 
 const prefix = '!';
 const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
@@ -78,7 +78,7 @@ const helpEmbed = new EmbedBuilder()
         { name: '!pda [user]', value: 'Consulta las multas de un usuario'},
         { name: '!eliminar-multa [user] [index]', value: 'Elimina la multa especifica de un usuario'},
         { name: '!anuncio [tiempo (min)] [anuncio]', value: 'Programa un anuncio para dentro de [tiempo] minutos'},
-        { name: '!ver-anuncios', value: 'Consulta los anuncios programados en el futuro'},
+        { name: '!ver-anuncios `[ ! ] DISABLED`', value: 'Consulta los anuncios programados en el futuro'},
     )
     .setColor('484e55')
 
@@ -166,7 +166,7 @@ const infoEmbed = new EmbedBuilder()
 
 
 // ----------------------------- anuncios ------------------------------------------
-const pathAnuncios = '/anuncios.json'
+const pathAnuncios = './anuncios.json'
 
 function leerAnuncios()
 {
@@ -183,6 +183,7 @@ function leerAnuncios()
 function guardarAnuncios(anuncios) {
     fs.writeFileSync(pathAnuncios, JSON.stringify(anuncios, null, 2)); // null, 2 es para formatear el JSON
 }
+
 
 
 
@@ -703,22 +704,13 @@ client.on('messageCreate', async message => {
         anuncios.push(nuevoAnuncio)
         guardarAnuncios(anuncios)
 
-        if(anuncios.length > 0) message.reply(anuncios)
-
         // envia confirmacion
         message.reply(`✅ Anuncio programado con éxito para : ${new Date(Date.now() + tiempoMs)}`)
-
-
-        // enviar anuncio despues del tiempo programado
-        setTimeout(() => {
-            canalAnuncios.send(`📣 Nuevo Anuncio : ${contenidoAnuncio}`)
-        }, tiempoMs);
-
     }
 
 
-    // ver anuncios
-    if(command === 'ver-anuncios')
+    // ver anuncios ---------------------------------------------------------------- DISABLED -----------------------------
+    if(command === '(DISABLED) ver-anuncios')
     {
         // Leer anuncios desde el archivo JSON
         const anuncios = leerAnuncios();
@@ -731,15 +723,30 @@ client.on('messageCreate', async message => {
         // Crear un embed para mostrar los anuncios
         const embedAnuncios = new EmbedBuilder()
             .setTitle('Anuncios Programados')
-            .setColor('BLUE');
 
+        
         // Agregar cada anuncio al embed
         anuncios.forEach((anuncio, index) => {
             embedAnuncios.addFields(
-                { name: `Anuncio ${index + 1}`, value: anuncio.text, inline: false },
-                { name: 'Programado para', value: `${new Date(anuncio.time).toLocaleString()}`, inline: true }
+                { name: `${anuncio.contenido}`, value: `*Anuncio Registrado*`, inline: false },
+                { name: 'Programado para', value: anuncio.programadoPara, inline: true },
             );
+
+            const ahora = Date.now();
+
+            if(anuncio.programadoPara < ahora)
+            {
+                canalAnuncios.send(`📢 Anuncio: ${anuncio.text}`);
+
+                // Eliminar el anuncio del array
+                anuncios.splice(index, 1);
+
+                console.log('Anuncio eliminado')
+
+                guardarAnuncios()
+            }
         });
+
 
         // Enviar el embed al canal
         message.reply({ embeds: [embedAnuncios] });
