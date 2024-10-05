@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 // ----------------------------- VARIABLES ------------------------------------------
 
-const version = '`^1.13.3`'
+const version = '`^1.14.3`'
 
 const prefix = '!';
 const requiredReactions = 7; // votaciones requeridas + 2 (reacciones del bot)
@@ -24,6 +24,7 @@ const canalServidorID = '1280542955202941128';
 const canalModeracionID = '1280542954796220467'
 const canalDenunciasID = '1281652489334296636'
 const canalMultasID = '1280542958487080963'
+const canalAnunciosID = '1280542955492605994'
 
 let estadoServidor = false; // bool de estado del servidor
 
@@ -86,20 +87,20 @@ const infoEmbed = new EmbedBuilder()
 
 
     const fs = require('fs');
-    const path = './multas.json'; // Archivo donde se almacenarán las multas
+    const pathMultas = './multas.json'; // Archivo donde se almacenarán las multas
 
     // Leer multas desde el archivo JSON
     function leerMultas() {
-        if (!fs.existsSync(path)) {
-            fs.writeFileSync(path, JSON.stringify([]));
+        if (!fs.existsSync(pathMultas)) {
+            fs.writeFileSync(pathMultas, JSON.stringify([]));
         }
-        const data = fs.readFileSync(path);
+        const data = fs.readFileSync(pathMultas);
         return JSON.parse(data);
     }
 
     // Escribir multas en el archivo JSON
     function guardarMultas() {
-        fs.writeFileSync(path, JSON.stringify(multas, null, 2)); // null, 2 es para formatear el JSON
+        fs.writeFileSync(pathMultas, JSON.stringify(multas, null, 2)); // null, 2 es para formatear el JSON
     }
 
     let multas = leerMultas();
@@ -154,6 +155,28 @@ const infoEmbed = new EmbedBuilder()
         guardarDenuncias(denuncias);
     }
 
+
+// ----------------------------- anuncios ------------------------------------------
+const pathAnuncios = './anuncios.json'
+
+function leerAnuncios()
+{
+    if(!fs.existsSync(pathAnuncios)) {
+        fs.writeFileSync(pathAnuncios, JSON.stringify([]));
+    }
+
+    const data = fs.readFileSync(pathAnuncios);
+    return JSON.parse(data);
+
+}
+
+// Escribir anuncios en el archivo JSON
+function guardarAnuncios(anuncios) {
+    fs.writeFileSync(pathAnuncios, JSON.stringify(anuncios, null, 2)); // null, 2 es para formatear el JSON
+}
+
+
+
 // ----------------------------- EVENTOS ------------------------------------------
 
 client.on('messageCreate', async message => {
@@ -170,6 +193,8 @@ client.on('messageCreate', async message => {
 
     const canalDenuncias = client.channels.cache.get(canalDenunciasID)
     const canalMultas = client.channels.cache.get(canalMultasID)
+
+    const canalAnuncios = client.channels.cache.get(canalAnunciosID)
 
 
     // ----------------------------- COMANDOS ------------------------------------------
@@ -623,6 +648,59 @@ client.on('messageCreate', async message => {
 
         // Confirmar eliminación
         message.reply('✅ La multa ha sido eliminada correctamente.');
+    }
+
+    // comando para poner anuncios
+    if (command === 'anuncio')
+    {
+        // extraer argumentos
+        const args = message.content.split(' ').slice(1)
+        const tiempo = parseInt(args[0])
+        const contenidoAnuncio = args.slice(1).join(' ')
+
+        // comprobar permisos
+        if(!message.member.roles.cache.has('1280542954351628326'))
+        {
+            return message.reply('⛔ Solo los moderadores / staffs pueden usar este comando')
+        }
+
+        // comprobar que hay suficientes argumentos
+        if(args.length < 2)
+        {
+            return message.reply('⚠️ Uso incorrecto del comando. Uso :  !anuncio <tiempo (min)> <texto> || Usa !help para más información')
+        }
+
+        // verificar que el tiempo sea un numero valido
+        if(isNaN(tiempo) || tiempo <= 0)
+        {
+            return message.reply('⚠️ El tiempo debe ser un número válido mayor que 0')
+        }
+
+        // conversion min -> ms
+        tiempoMs = tiempo * 60 * 1000
+
+        anuncios = leerAnuncios() // obtener anuncios de la funcion
+        
+        // crear anuncio
+        const nuevoAnuncio = {
+            contenido: contenidoAnuncio,
+            fecha: new Date(),
+            programadoPara: new Date(Date.now() + tiempoMs)
+        }
+
+        // guardar nuevo anuncio
+        anuncios.push(nuevoAnuncio)
+        guardarAnuncios(anuncios)
+
+        // envia confirmacion
+        message.reply(`✅ Anuncio programado con éxito para : ${new Date(Date.now() + tiempoMs)}`)
+
+
+        // enviar anuncio despues del tiempo programado
+        setTimeout(() => {
+            canalAnuncios.send(`📣 Nuevo Anuncio : ${contenidoAnuncio}`)
+        }, tiempoMs);
+
     }
 });
 
